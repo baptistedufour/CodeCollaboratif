@@ -26,34 +26,32 @@ Program ExoTP
     S=S+Ep(i)
   end do
 
-  ! open(unit=10,file='data')
   open(unit=11,file='Hist')
 
   Tint(1)=S/(R*Np)
 
-  ! write(10,*) Tint(0), '0'
 
   do j=2,int(Tf/dt)
     S=0.d0
 
     do i=1,Np
-      ! sigma= rn_std_normal_dist()
-      if (mod(i,2) == 1) then
-        call box(Z1,Z2)
-        sigma=Z1
-      else
-        sigma=Z2
-      endif
+      ! Choose thise one or this one
+      sigma= rn_std_normal_dist()
+      ! Or this one
+      ! if (mod(i,2) == 1) then
+      !   call box(Z1,Z2)
+      !   sigma=Z1
+      ! else
+      !   sigma=Z2
+      ! endif
 
       Ep(i)=coeff*(Ep(i)+RTdTau*(1.d0+sigma**2)+2.d0*sigma*sqrt(RTdTau*Ep(i)))
       S=S+Ep(i)
     end do
 
     Tint(j)=S/(R*Np)
-    ! write(10,*) Tint(j), j
     if (mod(j,diviseur)==0) then
       write(11,*) j,Tint(j)
-      ! print*,j
     endif
   end do
 
@@ -61,32 +59,26 @@ Program ExoTP
 
 contains
 
-  ! real(kind=8) function rn_std_normal_dist()
-  !
-  ! real*8 :: s = 0.449871d0, t = -0.386595d0, a = 0.19600d0, b = 0.25472d0, &
-  !           r1 = 0.27597d0, r2 = 0.27846d0, u, v, x, y, q
-  !
-  ! do
-  !
-  !   call random_number(u)
-  !   call random_number(v)
-  !
-  !   v = 1.7156d0 * (v - 0.5d0)
-  !   Z2 = 1.7156d0 * (Z2 - 0.5d0)
-  !
-  !   x = u - s
-  !   y = ABS(v) - t
-  !   q = x**2 + y*(a*y - b*x)
+  real(kind=8) function rn_std_normal_dist()
+    real*8 :: s = 0.449871d0, t = -0.386595d0, a = 0.19600d0, b = 0.25472d0, &
+    r1 = 0.27597d0, r2 = 0.27846d0, u, v, x, y, q
 
-  !   if (q < r1) exit
-  !   if (q > r2) cycle
-  !   if (v**2 < -4.0*log(u)*u**2) exit
-  !
-  ! end do
-  !
-  ! rn_std_normal_dist = v/u
-  !
-  ! end function rn_std_normal_dist
+    do
+      call random_number(u)
+      call random_number(v)
+
+      v = 1.7156d0 * (v - 0.5d0)
+      x = u - s
+      y = ABS(v) - t
+      q = x**2 + y*(a*y - b*x)
+      
+      if (q < r1) exit
+      if (q > r2) cycle
+      if (v**2 < -4.0*log(u)*u**2) exit
+    end do
+
+    rn_std_normal_dist = v/u
+  end function rn_std_normal_dist
 
   Subroutine Box(Z1,Z2)
 
