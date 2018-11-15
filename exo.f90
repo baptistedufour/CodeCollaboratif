@@ -2,10 +2,9 @@ Program ExoTP
   Implicit NONE
 
   Real*8,dimension(:),allocatable::Ep,Tint
-  Integer::Np,i,j,diviseur,k
-  real*8::Tau,dt,T,R,S,Tf,sigma,loinorm
+  Integer::Np,i,j,diviseur
+  real*8::Tau,dt,T,R,S,Tf,sigma
   REAL*8, PARAMETER :: Pi = 3.14159267
-  character(len=1)::str
 
   Tau=5
   dt=1.d0/100
@@ -52,9 +51,9 @@ contains
 
 real(kind=8) function rn_std_normal_dist()
 
-real :: half = 0.5
+real*8 :: half = 0.5
 
-real :: s = 0.449871, t = -0.386595, a = 0.19600, b = 0.25472, &
+real*8 :: s = 0.449871, t = -0.386595, a = 0.19600, b = 0.25472, &
         r1 = 0.27597, r2 = 0.27846, u, v, x, y, q
       x=rand(0) * (200000.d0+200000.d0) - 200000.d0
 
