@@ -3,7 +3,7 @@ Program ExoTP
 
   Real*8,dimension(:),allocatable::Ep,Tint
   Integer::Np,i,j,diviseur,Nt
-  real*8::Tau,dt,T,R,S,Tf,sigma,dtau,RTdtau,coeff
+  real*8::Tau,dt,T,R,S,Tf,sigma,dtau,RTdtau,coeff, Z1, Z2
   REAL*8, PARAMETER :: Pi = 3.14159267
 
   Tau=5.d0
@@ -33,11 +33,18 @@ Program ExoTP
 
   ! write(10,*) Tint(0), '0'
 
-  do j=1,int(Tf/dt)
+  do j=2,int(Tf/dt)
     S=0.d0
 
-    do i=2,Np
-      sigma= rn_std_normal_dist()
+    do i=1,Np
+      ! sigma= rn_std_normal_dist()
+      if (mod(i,2) == 1) then
+        call box(Z1,Z2)
+        sigma=Z1
+      else
+        sigma=Z2
+      endif
+
       Ep(i)=coeff*(Ep(i)+RTdTau*(1.d0+sigma**2)+2.d0*sigma*sqrt(RTdTau*Ep(i)))
       S=S+Ep(i)
     end do
@@ -54,30 +61,45 @@ Program ExoTP
 
 contains
 
-real(kind=8) function rn_std_normal_dist()
+  ! real(kind=8) function rn_std_normal_dist()
+  !
+  ! real*8 :: s = 0.449871d0, t = -0.386595d0, a = 0.19600d0, b = 0.25472d0, &
+  !           r1 = 0.27597d0, r2 = 0.27846d0, u, v, x, y, q
+  !
+  ! do
+  !
+  !   call random_number(u)
+  !   call random_number(v)
+  !
+  !   v = 1.7156d0 * (v - 0.5d0)
+  !   Z2 = 1.7156d0 * (Z2 - 0.5d0)
+  !
+  !   x = u - s
+  !   y = ABS(v) - t
+  !   q = x**2 + y*(a*y - b*x)
 
-real*8 :: s = 0.449871d0, t = -0.386595d0, a = 0.19600d0, b = 0.25472d0, &
-          r1 = 0.27597d0, r2 = 0.27846d0, u, v, x, y, q
+  !   if (q < r1) exit
+  !   if (q > r2) cycle
+  !   if (v**2 < -4.0*log(u)*u**2) exit
+  !
+  ! end do
+  !
+  ! rn_std_normal_dist = v/u
+  !
+  ! end function rn_std_normal_dist
 
-do
+  Subroutine Box(Z1,Z2)
 
-  call random_number(u)
-  call random_number(v)
-  v = 1.7156d0 * (v - 0.5d0)
+    real*8, intent(out) :: Z1, Z2
+    real*8:: LnU, PiV, u, v
+    call random_number(u)
+    call random_number(v)
+    PiV=2.d0*3.14159267*v
+    LnU=sqrt(-2.d0*log(u))
+    Z1= LnU*cos(PiV)
+    Z2= LnU*sin(PiV)
 
-  x = u - s
-  y = ABS(v) - t
-  q = x**2 + y*(a*y - b*x)
-
-  if (q < r1) exit
-  if (q > r2) cycle
-  if (v**2 < -4.0*log(u)*u**2) exit
-
-end do
-
-rn_std_normal_dist = v/u
-
-end function rn_std_normal_dist
+  End Subroutine
 
 end program
 
